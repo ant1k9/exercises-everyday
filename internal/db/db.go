@@ -1,18 +1,21 @@
 package db
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"log"
+	"strconv"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ant1k9/exercises-everyday/internal/config"
 )
 
-var (
-	Db *sqlx.DB
-)
+var Db *sqlx.DB
 
 type exercise struct {
 	Type    string `sql:"type"`
@@ -41,14 +44,35 @@ func InitialMigrate() {
 	Db.MustExec(InitialMigration)
 }
 
-func SaveProgress(t string, repeats int) {
-	Db.MustExec("INSERT INTO exercises (type, repeats) VALUES ($1, $2)", t, repeats)
-}
-
 func AllExercisesTypes() []string {
 	var types []string
 	Db.Select(&types, "SELECT DISTINCT type FROM exercises ORDER BY type")
 	return types
+}
+
+func Authenticate(login, password string) (string, bool) {
+	var id int
+	var dbPass string
+	Db.QueryRow("SELECT id, password FROM users WHERE login = $1", login).
+		Scan(&id, &dbPass)
+
+	if err := bcrypt.CompareHashAndPassword([]byte(dbPass), []byte(password)); err == nil {
+		return newSession(id), true
+	}
+	return "", false
+}
+
+func CheckSession(sessValue string) bool {
+	var exist int
+	Db.QueryRow("SELECT COUNT(1) FROM sessions WHERE value = $1", sessValue).Scan(&exist)
+	return exist > 0
+}
+
+func extractCurrentWeek() int {
+	var currentWeek int
+	Db.QueryRow("SELECT EXTRACT(week FROM date) FROM exercises ORDER BY date DESC LIMIT 1").
+		Scan(&currentWeek)
+	return currentWeek
 }
 
 func GetStatsForTwoWeeks() (map[string]int, map[string]int) {
@@ -75,9 +99,16 @@ func GetStatsForTwoWeeks() (map[string]int, map[string]int) {
 	return lastWeekStats, currentWeekStats
 }
 
-func extractCurrentWeek() int {
-	var currentWeek int
-	Db.QueryRow("SELECT EXTRACT(week FROM date) FROM exercises ORDER BY date DESC LIMIT 1").
-		Scan(&currentWeek)
-	return currentWeek
+func newSession(id int) string {
+	value := sha256.New()
+	for i := 0; i < 5; i++ {
+		value.Write([]byte(strconv.Itoa(time.Now().Nanosecond())))
+	}
+	sessValue := hex.EncodeToString(value.Sum(nil))
+	Db.MustExec("INSERT INTO sessions (user_id, value) VALUES($1, $2)", id, sessValue)
+	return sessValue
+}
+
+func SaveProgress(t string, repeats int) {
+	Db.MustExec("INSERT INTO exercises (type, repeats) VALUES ($1, $2)", t, repeats)
 }
