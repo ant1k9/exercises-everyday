@@ -1,0 +1,4 @@
+[metadata.heroku]
+  root-package = "github.com/ant1k9/exercises-everyday"
+  go-version = "1.12"
+  install = [ "./cmd/..." ]

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Exercises everyday</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <style type="text/css">
+    body {
+      margin: 0px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 20px;
+      line-height: 20px;
+      background-color: #fff;
+    }
+
+    header {
+      padding: 20px;
+    }
+
+    td,th {
+      padding: 10px;
+    }
+
+    a {
+      color: #444;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1 class="logo">Exercises</h1>
+    <table>
+      <form method="post" action="/exercise/done" id="exercise-submit">
+        <tr>
+          <td>
+            <select name="type">
+              {{ range .ExercisesTypes }}
+              <option value="{{ . }}">{{ . }}</option>
+              {{ end }}
+            </select>
+          </td>
+          <td><input type="text" name="repeats"></td>
+          <td> <input type="submit" value="Done"></td>
+        </tr>
+      </form>
+
+      <form method="post" action="/new/type" id="new-exercise-type">
+        <tr>
+          <td>New type of exercise:</td>
+          <td><input type="text" name="type"></td>
+          <td><input type="submit" value="Add"></td>
+        </tr>
+      </form>
+    </table><br/>
+
+    <table>
+      <thead>
+        <th>Type</th>
+        <th>Last Week</th>
+        <th>Current Week</th>
+      </thead>
+      <tbody>
+        {{ $thisWeekStats := .ThisWeekStats }}
+        {{ $lastWeekStats := .LastWeekStats }}
+        {{ range $type := .ExercisesTypes }}
+        <tr>
+          <td>{{ $type }} </td>
+          <td>{{ index $thisWeekStats $type }}</td>
+          <td>{{ index $lastWeekStats $type }}</td>
+          {{ end }}
+        </tr>
+      </tbody>
+    </table>
+  </header>
+</body>
+</html>
