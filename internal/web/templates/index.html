@@ -68,8 +68,8 @@
         {{ range $type := .ExercisesTypes }}
         <tr>
           <td>{{ $type }} </td>
-          <td>{{ index $thisWeekStats $type }}</td>
           <td>{{ index $lastWeekStats $type }}</td>
+          <td>{{ index $thisWeekStats $type }}</td>
           {{ end }}
         </tr>
       </tbody>
