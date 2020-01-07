@@ -26,12 +26,13 @@ type exercise struct {
 func init() {
 	var err error
 	connectionParams := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=%s %s",
 		config.Conf.Database.Host,
 		config.Conf.Database.Port,
 		config.Conf.Database.Username,
 		config.Conf.Database.Password,
 		config.Conf.Database.Name,
+		config.Conf.Database.Extra,
 	)
 
 	Db, err = sqlx.Connect("postgres", connectionParams)

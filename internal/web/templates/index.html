@@ -61,17 +61,20 @@
         <th>Type</th>
         <th>Last Week</th>
         <th>Current Week</th>
+        <th>Change</th>
       </thead>
       <tbody>
         {{ $thisWeekStats := .ThisWeekStats }}
         {{ $lastWeekStats := .LastWeekStats }}
+        {{ $changeStats := .ChangeStats }}
         {{ range $type := .ExercisesTypes }}
         <tr>
           <td>{{ $type }} </td>
           <td>{{ index $lastWeekStats $type }}</td>
           <td>{{ index $thisWeekStats $type }}</td>
-          {{ end }}
+          <td>{{ index $changeStats $type }}%</td>
         </tr>
+        {{ end }}
       </tbody>
     </table>
   </header>

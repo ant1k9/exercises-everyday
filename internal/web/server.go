@@ -20,6 +20,26 @@ type Data struct {
 	ExercisesTypes []string
 	ThisWeekStats  map[string]int
 	LastWeekStats  map[string]int
+	ChangeStats    map[string]int
+}
+
+func calculateChangeStats(lastWeekStats, thisWeekStats map[string]int) map[string]int {
+	changeStats := make(map[string]int)
+	for k, v := range thisWeekStats {
+		if lastWeekValue, ok := lastWeekStats[k]; ok && lastWeekValue > 0 {
+			changeStats[k] = int((float64(v)/float64(lastWeekValue) - 1.0) * 100.0)
+			continue
+		}
+		changeStats[k] = 100
+	}
+
+	for k := range lastWeekStats {
+		if _, ok := lastWeekStats[k]; !ok {
+			changeStats[k] = -100
+		}
+	}
+
+	return changeStats
 }
 
 func checkSession(r *http.Request) bool {
@@ -36,6 +56,7 @@ func indexPage(w http.ResponseWriter, r *http.Request) {
 		ExercisesTypes: db.AllExercisesTypes(),
 		ThisWeekStats:  thisWeekStats,
 		LastWeekStats:  lastWeekStats,
+		ChangeStats:    calculateChangeStats(lastWeekStats, thisWeekStats),
 	})
 }
 
