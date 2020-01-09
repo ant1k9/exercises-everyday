@@ -27,6 +27,14 @@
       color: #444;
       text-decoration: none;
     }
+
+    .progress {
+      background-color: #aeb;
+    }
+
+    .regress {
+      background-color: #fac;
+    }
   </style>
 </head>
 
@@ -69,18 +77,15 @@
         {{ $lastWeekStats := .LastWeekStats }}
         {{ $changeStats := .ChangeStats }}
         {{ range $type := .ExercisesTypes }}
-        <tr>
-          <td>{{ $type }} </td>
-          <td>{{ index $lastWeekStats $type }}</td>
-          <td>{{ index $thisWeekStats $type }}</td>
-          <td>
-              {{ with $stat := index $changeStats $type  }}
-                {{ if ne $stat "" }}
-                  {{ $stat }}%
-                {{ end }}
-              {{end }}
-          </td>
-        </tr>
+          {{ $last := index $lastWeekStats $type }}
+          {{ $this := index $thisWeekStats $type }}
+          {{ $change := index $changeStats $type }}
+          <tr class="{{ if gt $this $last }} progress {{ else if lt $this $last }} regress {{ end }}">
+            <td>{{ $type }} </td>
+            <td>{{ $last }}</td>
+            <td>{{ $this }}</td>
+            <td>{{ if ne $change "" }} {{ $change }}% {{ end }}</td>
+          </tr>
         {{ end }}
       </tbody>
     </table>
