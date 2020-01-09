@@ -27,9 +27,11 @@ func calculateChangeStats(lastWeekStats, thisWeekStats map[string]int) map[strin
 	changeStats := make(map[string]string)
 	for k, v := range thisWeekStats {
 		if lastWeekValue, ok := lastWeekStats[k]; ok && lastWeekValue > 0 {
-			changeStats[k] = strconv.Itoa(
-				int((float64(v)/float64(lastWeekValue) - 1.0) * 100.0),
-			)
+			value := int((float64(v)/float64(lastWeekValue) - 1.0) * 100.0)
+			changeStats[k] = strconv.Itoa(value)
+			if value > 0 {
+				changeStats[k] = "+" + changeStats[k]
+			}
 			continue
 		}
 		changeStats[k] = "+100"
