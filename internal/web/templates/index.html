@@ -73,7 +73,13 @@
           <td>{{ $type }} </td>
           <td>{{ index $lastWeekStats $type }}</td>
           <td>{{ index $thisWeekStats $type }}</td>
-          <td>{{ index $changeStats $type }}%</td>
+          <td>
+              {{ with $stat := index $changeStats $type  }}
+                {{ if ne $stat "" }}
+                  {{ $stat }}%
+                {{ end }}
+              {{end }}
+          </td>
         </tr>
         {{ end }}
       </tbody>
