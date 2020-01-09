@@ -35,6 +35,10 @@
     .regress {
       background-color: #fac;
     }
+
+    .neutral {
+      background-color: #feb;
+    }
   </style>
 </head>
 
@@ -80,7 +84,11 @@
           {{ $last := index $lastWeekStats $type }}
           {{ $this := index $thisWeekStats $type }}
           {{ $change := index $changeStats $type }}
-          <tr class="{{ if gt $this $last }} progress {{ else if lt $this $last }} regress {{ end }}">
+          <tr class="
+              {{ if gt $this $last }} progress
+              {{ else if lt $this $last }} regress
+              {{ else }} neutral
+              {{ end }}">
             <td>{{ $type }} </td>
             <td>{{ $last }}</td>
             <td>{{ $this }}</td>

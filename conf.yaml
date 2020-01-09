@@ -4,7 +4,7 @@ database:
     username: exercises
     host: 127.0.0.1
     port: 5432
-    extra: sslmode=disable
+    # extra: sslmode=disable
 
 server:
     host: 0.0.0.0
