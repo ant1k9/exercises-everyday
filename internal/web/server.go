@@ -17,10 +17,11 @@ import (
 const SessionCookie = "exercises-everyday-session"
 
 type Data struct {
-	ExercisesTypes []string
-	ThisWeekStats  map[string]int
-	LastWeekStats  map[string]int
-	ChangeStats    map[string]string
+	ExercisesTypes   []string
+	ThisWeekStats    map[string]int
+	LastWeekStats    map[string]int
+	ChangeStats      map[string]string
+	EstimatedRepeats int
 }
 
 func calculateChangeStats(lastWeekStats, thisWeekStats map[string]int) map[string]string {
@@ -55,12 +56,13 @@ func checkSession(r *http.Request) bool {
 
 func indexPage(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("internal/web/templates/index.html"))
-	lastWeekStats, thisWeekStats := db.GetStatsForTwoWeeks()
+	lastWeekStats, currentWeekStats := db.GetStatsForTwoWeeks()
 	tmpl.Execute(w, Data{
-		ExercisesTypes: db.AllExercisesTypes(),
-		ThisWeekStats:  thisWeekStats,
-		LastWeekStats:  lastWeekStats,
-		ChangeStats:    calculateChangeStats(lastWeekStats, thisWeekStats),
+		ExercisesTypes:   db.AllExercisesTypes(),
+		ThisWeekStats:    currentWeekStats,
+		LastWeekStats:    lastWeekStats,
+		ChangeStats:      calculateChangeStats(lastWeekStats, currentWeekStats),
+		EstimatedRepeats: db.EstimatedRepeats(lastWeekStats, currentWeekStats),
 	})
 }
 

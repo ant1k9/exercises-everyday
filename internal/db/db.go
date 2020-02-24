@@ -87,17 +87,49 @@ func GetStatsForTwoWeeks() (map[string]int, map[string]int) {
 		&exercises,
 		`SELECT type, SUM(repeats) repeats, EXTRACT(week FROM date) week
 			FROM exercises WHERE EXTRACT(year FROM date) = EXTRACT(year FROM now())
-			AND EXTRACT(week FROM date) <= $1 GROUP BY type, week `, currentWeek,
+			AND EXTRACT(week FROM date) >= $1 GROUP BY type, week `, currentWeek-1,
 	)
 
-	for _, exercise := range exercises {
-		if exercise.Week == currentWeek {
-			currentWeekStats[exercise.Type] = exercise.Repeats
+	for _, e := range exercises {
+		if e.Week == currentWeek {
+			currentWeekStats[e.Type] = e.Repeats
 		} else {
-			lastWeekStats[exercise.Type] = exercise.Repeats
+			lastWeekStats[e.Type] = e.Repeats
 		}
 	}
+
 	return lastWeekStats, currentWeekStats
+}
+
+func EstimatedRepeats(lastWeekStats, currentWeekStats map[string]int) int {
+	estimate := 0
+	averageStats := getAverageRepeats()
+
+	for name, needed := range lastWeekStats {
+		current, _ := currentWeekStats[name]
+		if avg, _ := averageStats[name]; avg > 0 && current < needed {
+			estimate += (needed - current) / avg
+			if current > 0 && needed%current > 0 {
+				estimate++
+			}
+		}
+	}
+	return estimate
+}
+
+func getAverageRepeats() map[string]int {
+	averageStats := make(map[string]int)
+
+	var exercises []exercise
+	Db.Select(
+		&exercises,
+		`SELECT type, CEIL(AVG(repeats)) repeats, 1 AS week FROM exercises GROUP BY type`,
+	)
+
+	for _, e := range exercises {
+		averageStats[e.Type] = e.Repeats
+	}
+	return averageStats
 }
 
 func newSession(id int) string {
