@@ -8,26 +8,25 @@ DB_BACKUP_PATH="exercises.dump"
 DB_BACKUP_ARCHIVE="$DB_BACKUP_PATH.zip"
 DROPBOX_PATH="/exercises/$(date +'%Y%m%d_%H%M%S').dump.zip"
 
-heroku="/usr/local/bin/heroku"
 CURRENT_BACKUP_VERSION="$(
-    $heroku pg:backups \
+    heroku pg:backups \
         -a $HEROKU_APP \
         | grep -Eo 'b[0-9]+' \
         | tail -1\
 )"
 
 # Delete last backup
-$heroku pg:backups:delete \
+heroku pg:backups:delete \
     -a $HEROKU_APP \
     --confirm "$HEROKU_APP" \
     "$CURRENT_BACKUP_VERSION"
 
 # Create new backup
-$heroku pg:backups:capture \
+heroku pg:backups:capture \
     -a $HEROKU_APP
 
 # Download backup
-$heroku pg:backups:download \
+heroku pg:backups:download \
     -a $HEROKU_APP \
     -o "$DB_BACKUP_PATH"
 
