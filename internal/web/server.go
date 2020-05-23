@@ -103,24 +103,10 @@ func exerciseDone(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusFound)
 }
 
-func newType(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		if checkSession(r) {
-			if err := r.ParseForm(); err == nil {
-				db.SaveProgress(r.FormValue("type"), 0)
-			}
-			http.Redirect(w, r, "/", http.StatusFound)
-			return
-		}
-	}
-	http.Redirect(w, r, "/login", http.StatusFound)
-}
-
 func ServeForever() {
 	router := mux.NewRouter()
 	router.HandleFunc("/exercise/done", exerciseDone)
 	router.HandleFunc("/login", login)
-	router.HandleFunc("/new/type", newType)
 	router.HandleFunc("/", indexPage)
 
 	log.Fatal(http.ListenAndServe(

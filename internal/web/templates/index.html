@@ -9,18 +9,25 @@
   <style type="text/css">
     body {
       margin: 0px;
+      padding: 20px;
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       font-size: 20px;
       line-height: 20px;
       background-color: #fff;
     }
 
-    header {
-      padding: 20px;
-    }
-
     td,th {
       padding: 10px;
+      text-align: left;
+    }
+
+    td.exs {
+      border: 1px solid black;
+    }
+
+    h1 {
+      margin-left: 10px;
+      font-style: italic;
     }
 
     a {
@@ -28,76 +35,105 @@
       text-decoration: none;
     }
 
+		input[type=text] {
+		  border: 1px solid black;
+		  border-radius: 10px;
+		  height: 30px;
+		  width: 180px;
+		  font-size: 20px;
+		}
+
+    input[type="submit"] {
+      background-color: white;
+      color: black;
+      font-size: 18px;
+      padding: 7px 20px;
+      border: 1px solid black;
+      border-radius: 10px;
+      text-decoration: 0.4s;
+    }
+
     .progress {
-      background-color: #aeb;
+      background-color: #888;
+      color: #eee;
+      opacity: 100%;
     }
 
     .regress {
-      background-color: #fac;
+      background-color: #ccc;
+      color: #333;
+      opacity: 85%;
     }
 
     .neutral {
-      background-color: #feb;
+      color: #444;
+      opacity: 70%;
+    }
+
+    .estimate {
+      color: #333;
+      margin-left: 10px;
     }
   </style>
+  <script src="https://goodies.pixabay.com/javascript/auto-complete/auto-complete.js"></script>
+  <link rel="stylesheet" href="https://goodies.pixabay.com/javascript/auto-complete/auto-complete.css">
 </head>
 
 <body>
-  <header>
-    <h1>Exercises</h1>
-    <table>
-      <form method="post" action="/exercise/done" id="exercise-submit">
-        <tr>
-          <td>
-            <select name="type">
-              {{ range .ExercisesTypes }}
-              <option value="{{ . }}">{{ . }}</option>
-              {{ end }}
-            </select>
-          </td>
-          <td><input type="text" name="repeats"></td>
-          <td><input type="submit" value="Done"></td>
-        </tr>
-      </form>
+  <h1>Exercises</h1>
+  <table>
+    <form method="post" action="/exercise/done" id="exercise-submit">
+      <tr>
+        <td><input type="text" name="type" autoComplete="off"></td>
+        <td><input type="text" name="repeats"></td>
+        <td><input type="submit" value="Done"></td>
+      </tr>
+    </form>
+  </table><br/>
 
-      <form method="post" action="/new/type" id="new-exercise-type">
-        <tr>
-          <td>New type of exercise:</td>
-          <td><input type="text" name="type"></td>
-          <td><input type="submit" value="Add"></td>
-        </tr>
-      </form>
-    </table><br/>
+  <table>
+    <thead>
+      <th>Type</th>
+      <th>Last Week</th>
+      <th>Current Week</th>
+      <th>Change</th>
+    </thead>
+    <tbody>
+      {{ $thisWeekStats := .ThisWeekStats }}
+      {{ $lastWeekStats := .LastWeekStats }}
+      {{ $changeStats := .ChangeStats }}
+      {{ range $type := .ExercisesTypes }}
+      {{ $last := index $lastWeekStats $type }}
+      {{ $this := index $thisWeekStats $type }}
+      {{ $change := index $changeStats $type }}
+      <tr class="
+                 {{ if gt $this $last }} progress
+                 {{ else if lt $this $last }} regress
+                 {{ else }} neutral
+                 {{ end }}">
+        <td class="exs">{{ $type }} </td>
+        <td class="exs">{{ $last }}</td>
+        <td class="exs">{{ $this }}</td>
+        <td class="exs">{{ if ne $change "" }} {{ $change }}% {{ end }}</td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table><br/>
+  <div class="estimate">Estimated repeats: {{ .EstimatedRepeats }}</div>
 
-    <table>
-      <thead>
-        <th>Type</th>
-        <th>Last Week</th>
-        <th>Current Week</th>
-        <th>Change</th>
-      </thead>
-      <tbody>
-        {{ $thisWeekStats := .ThisWeekStats }}
-        {{ $lastWeekStats := .LastWeekStats }}
-        {{ $changeStats := .ChangeStats }}
-        {{ range $type := .ExercisesTypes }}
-          {{ $last := index $lastWeekStats $type }}
-          {{ $this := index $thisWeekStats $type }}
-          {{ $change := index $changeStats $type }}
-          <tr class="
-              {{ if gt $this $last }} progress
-              {{ else if lt $this $last }} regress
-              {{ else }} neutral
-              {{ end }}">
-            <td>{{ $type }} </td>
-            <td>{{ $last }}</td>
-            <td>{{ $this }}</td>
-            <td>{{ if ne $change "" }} {{ $change }}% {{ end }}</td>
-          </tr>
-        {{ end }}
-      </tbody>
-    </table><br/>
-    <div>Estimated repeats: {{ .EstimatedRepeats }}</div>
-  </header>
+  <script>
+    let choices = [{{ range .ExercisesTypes }} "{{ . }}", {{ end }}];
+    new autoComplete({
+      selector: 'input[name="type"]',
+      minChars: 2,
+      source: function(term, suggest){
+        term = term.toLowerCase();
+        let matches = [];
+        for ( i = 0; i < choices.length; i++ )
+          if (~choices[i].toLowerCase().indexOf(term)) matches.push(choices[i]);
+        suggest(matches);
+      }
+    });
+  </script>
 </body>
 </html>
