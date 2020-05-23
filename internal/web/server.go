@@ -105,6 +105,9 @@ func exerciseDone(w http.ResponseWriter, r *http.Request) {
 
 func ServeForever() {
 	router := mux.NewRouter()
+	router.PathPrefix("/static/").Handler(
+		http.StripPrefix("/static/", http.FileServer(http.Dir("internal/web/static"))),
+	)
 	router.HandleFunc("/exercise/done", exerciseDone)
 	router.HandleFunc("/login", login)
 	router.HandleFunc("/", indexPage)

@@ -4,79 +4,11 @@
 <head>
   <title>Exercises everyday</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9" />
 
-  <style type="text/css">
-    body {
-      margin: 0px;
-      padding: 20px;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: 20px;
-      line-height: 20px;
-      background-color: #fff;
-    }
-
-    td,th {
-      padding: 10px;
-      text-align: left;
-    }
-
-    td.exs {
-      border: 1px solid black;
-    }
-
-    h1 {
-      margin-left: 10px;
-      font-style: italic;
-    }
-
-    a {
-      color: #444;
-      text-decoration: none;
-    }
-
-		input[type=text] {
-		  border: 1px solid black;
-		  border-radius: 10px;
-		  height: 30px;
-		  width: 180px;
-		  font-size: 20px;
-		}
-
-    input[type="submit"] {
-      background-color: white;
-      color: black;
-      font-size: 18px;
-      padding: 7px 20px;
-      border: 1px solid black;
-      border-radius: 10px;
-      text-decoration: 0.4s;
-    }
-
-    .progress {
-      background-color: #888;
-      color: #eee;
-      opacity: 100%;
-    }
-
-    .regress {
-      background-color: #ccc;
-      color: #333;
-      opacity: 85%;
-    }
-
-    .neutral {
-      color: #444;
-      opacity: 70%;
-    }
-
-    .estimate {
-      color: #333;
-      margin-left: 10px;
-    }
-  </style>
-  <script src="https://goodies.pixabay.com/javascript/auto-complete/auto-complete.js"></script>
   <link rel="stylesheet" href="https://goodies.pixabay.com/javascript/auto-complete/auto-complete.css">
+  <link rel="stylesheet" href="static/css/base.css">
+  <script src="https://goodies.pixabay.com/javascript/auto-complete/auto-complete.js"></script>
 </head>
 
 <body>
@@ -85,7 +17,7 @@
     <form method="post" action="/exercise/done" id="exercise-submit">
       <tr>
         <td><input type="text" name="type" autoComplete="off"></td>
-        <td><input type="text" name="repeats"></td>
+        <td><input style="width: 45px" type="text" name="repeats"></td>
         <td><input type="submit" value="Done"></td>
       </tr>
     </form>
