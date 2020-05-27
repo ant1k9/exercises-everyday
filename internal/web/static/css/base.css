@@ -45,13 +45,13 @@ input[type="submit"] {
   text-decoration: 0.4s;
 }
 
-.progress {
+.regress {
   background-color: #888;
   color: #eee;
   opacity: 100%;
 }
 
-.regress {
+.progress {
   background-color: #ccc;
   color: #333;
   opacity: 85%;
