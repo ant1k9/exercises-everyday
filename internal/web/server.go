@@ -1,9 +1,9 @@
 package web
 
 import (
-	"fmt"
 	"html/template"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -113,9 +113,7 @@ func ServeForever() {
 	router.HandleFunc("/", indexPage)
 
 	log.Fatal(http.ListenAndServe(
-		fmt.Sprintf(
-			"%s:%s",
-			config.Conf.Server.Host, config.Conf.Server.Port,
-		), router,
+		net.JoinHostPort(config.Conf.Server.Host, config.Conf.Server.Port),
+		router,
 	))
 }
